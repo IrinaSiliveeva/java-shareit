@@ -16,10 +16,6 @@ public class InMemoryItemStorage {
     private final Map<Long, Item> itemStorage = new HashMap<>();
     private long id = 1;
 
-    private void addId() {
-        id++;
-    }
-
     public Item getItem(Long id) {
         if (!itemStorage.containsKey(id)) {
             throw new NotFoundException("Предмет с id " + id + " не найден");
@@ -37,8 +33,7 @@ public class InMemoryItemStorage {
             throw new ConflictException("Предмет с id " + item.getId() + " уже существует");
         }
         if (item.getId() == null) {
-            item.setId(id);
-            addId();
+            item.setId(id++);
         }
         itemStorage.put(item.getId(), item);
         return item;

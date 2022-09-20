@@ -12,10 +12,6 @@ public class InMemoryUserStorage {
     private final Map<Long, User> userStorage = new HashMap<>();
     private long id = 1;
 
-    private void addId() {
-        id++;
-    }
-
     private void checkEmail(User user) {
         for (User checkUser : userStorage.values()) {
             if (checkUser.getEmail().equals(user.getEmail())) {
@@ -27,8 +23,7 @@ public class InMemoryUserStorage {
     public User save(User user) {
         checkEmail(user);
         if (user.getId() == 0) {
-            user.setId(id);
-            addId();
+            user.setId(id++);
         }
         userStorage.put(user.getId(), user);
         return user;
