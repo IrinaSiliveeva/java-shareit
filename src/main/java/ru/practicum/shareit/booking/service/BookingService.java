@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import ru.practicum.shareit.booking.dto.BookingDtoInput;
 import ru.practicum.shareit.booking.dto.BookingDtoOutput;
@@ -31,6 +32,7 @@ public class BookingService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public BookingDtoOutput createBooking(BookingDtoInput bookingDtoInput, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь с id " + userId + " не найден"));
@@ -60,6 +62,7 @@ public class BookingService {
         }
     }
 
+    @Transactional(readOnly = true)
     public BookingDtoOutput getBooking(Long bookingId, Long userId) {
         Booking booking = getBooking(bookingId);
         if (Objects.equals(booking.getBooker().getId(), userId) ||
@@ -74,6 +77,7 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException("Букинг с id " + bookingId + " не найден"));
     }
 
+    @Transactional
     public BookingDtoOutput approveBooking(Long bookingId, Long userId, Boolean approve) {
         Booking booking = getBooking(bookingId);
         if (!booking.getStatus().equals(Status.WAITING)) {
@@ -94,6 +98,7 @@ public class BookingService {
                 new NotFoundException("Пользователь с id " + userId + " не найден"));
     }
 
+    @Transactional(readOnly = true)
     public Collection<BookingDtoOutput> getAllBookingByUser(Long userId, String state) {
         checkStateAndUser(state, userId);
         switch (state) {
@@ -136,6 +141,7 @@ public class BookingService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Collection<BookingDtoOutput> getAllBookingByOwner(Long ownerId, String state) {
         checkStateAndUser(state, ownerId);
         switch (state) {
