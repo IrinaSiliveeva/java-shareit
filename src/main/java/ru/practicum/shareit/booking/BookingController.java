@@ -10,9 +10,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
-/**
- * TODO Sprint add-bookings.
- */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
@@ -44,14 +41,18 @@ public class BookingController {
     @GetMapping
     public Collection<BookingDtoOutput> getAllBookingByUser(
             @RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
-            @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getAllBookingByUser(userId, state);
+            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(name = "from", required = false) Integer from,
+            @RequestParam(name = "size", required = false) Integer size) {
+        return bookingService.getAllBookingByUser(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public Collection<BookingDtoOutput> getAllBookingByOwner(
             @RequestHeader("X-Sharer-User-Id") @NotNull Long ownerId,
-            @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getAllBookingByOwner(ownerId, state);
+            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(name = "from", required = false) Integer from,
+            @RequestParam(name = "size", required = false) Integer size) {
+        return bookingService.getAllBookingByOwner(ownerId, state, from, size);
     }
 }

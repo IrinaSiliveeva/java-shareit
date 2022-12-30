@@ -31,8 +31,10 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> getUserItems(@RequestHeader("X-Sharer-User-Id") @NotNull Long ownerId) {
-        return itemService.getUserItems(ownerId);
+    public Collection<ItemDto> getUserItems(@RequestHeader("X-Sharer-User-Id") @NotNull Long ownerId,
+                                            @RequestParam(name = "from", required = false) Integer from,
+                                            @RequestParam(name = "size", required = false) Integer size) {
+        return itemService.getUserItems(ownerId, from, size);
     }
 
     @PatchMapping("{id}")
@@ -42,8 +44,10 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> searchItems(@RequestParam(name = "text", defaultValue = "") String keyword) {
-        return itemService.searchItems(keyword);
+    public Collection<ItemDto> searchItems(@RequestParam(name = "text", defaultValue = "") String keyword,
+                                           @RequestParam(name = "from", required = false) Integer from,
+                                           @RequestParam(name = "size", required = false) Integer size) {
+        return itemService.searchItems(keyword, from, size);
     }
 
     @PostMapping("{itemId}/comment")
