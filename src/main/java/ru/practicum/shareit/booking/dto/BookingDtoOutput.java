@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
+@EqualsAndHashCode
 @RequiredArgsConstructor
 @Builder
 public class BookingDtoOutput {

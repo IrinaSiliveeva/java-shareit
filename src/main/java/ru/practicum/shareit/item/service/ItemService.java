@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -15,8 +16,11 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.util.CustomPageable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,11 +36,18 @@ public class ItemService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository requestRepository;
 
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
         Item item = ItemMapper.fromItemDto(itemDto);
         item.setOwner(userRepository.findById(ownerId).orElseThrow(() ->
                 new NotFoundException("Пользователь с id " + ownerId + " не найден")));
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() ->
+                            new NotFoundException("Запрос с таким id: " + itemDto.getRequestId() + "не найден"));
+            item.setRequest(itemRequest);
+        }
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -77,9 +88,10 @@ public class ItemService {
                 new NotFoundException("Пользователь с id " + userId + " не найден"));
     }
 
-    public Collection<ItemDto> getUserItems(Long userId) {
+    public Collection<ItemDto> getUserItems(Long userId, Integer from, Integer size) {
         User user = getUser(userId);
-        Collection<ItemDto> items = itemRepository.findAllByOwner(user).stream()
+        Pageable pageable = CustomPageable.of(from, size);
+        Collection<ItemDto> items = itemRepository.findAllByOwner(user, pageable).stream()
                 .filter((Item x) -> Objects.equals(userId, x.getOwner().getId())).sorted(Comparator.comparing(Item::getId))
                 .map(ItemMapper::toItemDto).collect(Collectors.toList());
         for (ItemDto itemDto : items) {
@@ -106,11 +118,12 @@ public class ItemService {
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
-    public Collection<ItemDto> searchItems(String keyword) {
+    public Collection<ItemDto> searchItems(String keyword, Integer from, Integer size) {
         if (keyword.isEmpty()) {
             return new ArrayList<>();
         }
-        return itemRepository.searchItems(keyword).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        Pageable pageable = CustomPageable.of(from, size);
+        return itemRepository.searchItems(keyword, pageable).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     public CommentDto createComment(CommentDto commentDto, Long itemId, Long userId) {

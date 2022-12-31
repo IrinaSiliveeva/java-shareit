@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -17,6 +18,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
+import ru.practicum.shareit.util.CustomPageable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -99,21 +101,25 @@ public class BookingService {
     }
 
     @Transactional(readOnly = true)
-    public Collection<BookingDtoOutput> getAllBookingByUser(Long userId, String state) {
+    public Collection<BookingDtoOutput> getAllBookingByUser(Long userId, String state, Integer from, Integer size) {
         checkStateAndUser(state, userId);
+        Pageable pageable = CustomPageable.of(from, size);
         switch (state) {
             case "ALL":
-                return bookingRepository.findAllByBooker_IdOrderByEndDesc(userId).stream()
+                return bookingRepository.findAllByBooker_IdOrderByEndDesc(userId, pageable).stream()
                         .map(BookingMapper::toBookingDtoOutput).collect(Collectors.toList());
             case "WAITING":
-                return bookingRepository.findAllByBooker_IdAndStatusOrderByEndDesc(userId, Status.WAITING).stream()
+                return bookingRepository.findAllByBooker_IdAndStatusOrderByEndDesc(userId, Status.WAITING,
+                                pageable).stream()
                         .map(BookingMapper::toBookingDtoOutput).collect(Collectors.toList());
             case "REJECTED":
-                return bookingRepository.findAllByBooker_IdAndStatusOrderByEndDesc(userId, Status.REJECTED).stream()
+                return bookingRepository.findAllByBooker_IdAndStatusOrderByEndDesc(userId, Status.REJECTED,
+                                pageable).stream()
                         .map(BookingMapper::toBookingDtoOutput).collect(Collectors.toList());
             case "PAST":
                 List<BookingDtoOutput> pastList = new ArrayList<>();
-                for (Booking booking : bookingRepository.findAllByBooker_IdOrderByEndDesc(userId)) {
+                for (Booking booking : bookingRepository.findAllByBooker_IdOrderByEndDesc(userId,
+                        pageable)) {
                     if (booking.getEnd().isBefore(LocalDateTime.now())) {
                         pastList.add(BookingMapper.toBookingDtoOutput(booking));
                     }
@@ -121,7 +127,8 @@ public class BookingService {
                 return pastList;
             case "CURRENT":
                 List<BookingDtoOutput> currentList = new ArrayList<>();
-                for (Booking booking : bookingRepository.findAllByBooker_IdOrderByEndDesc(userId)) {
+                for (Booking booking : bookingRepository.findAllByBooker_IdOrderByEndDesc(userId,
+                        pageable)) {
                     if (booking.getStart().isBefore(LocalDateTime.now()) &&
                             booking.getEnd().isAfter(LocalDateTime.now())) {
                         currentList.add(BookingMapper.toBookingDtoOutput(booking));
@@ -130,7 +137,8 @@ public class BookingService {
                 return currentList;
             case "FUTURE":
                 List<BookingDtoOutput> futureList = new ArrayList<>();
-                for (Booking booking : bookingRepository.findAllByBooker_IdOrderByEndDesc(userId)) {
+                for (Booking booking : bookingRepository.findAllByBooker_IdOrderByEndDesc(userId,
+                        pageable)) {
                     if (booking.getEnd().isAfter(LocalDateTime.now())) {
                         futureList.add(BookingMapper.toBookingDtoOutput(booking));
                     }
@@ -142,21 +150,22 @@ public class BookingService {
     }
 
     @Transactional(readOnly = true)
-    public Collection<BookingDtoOutput> getAllBookingByOwner(Long ownerId, String state) {
+    public Collection<BookingDtoOutput> getAllBookingByOwner(Long ownerId, String state, Integer from, Integer size) {
         checkStateAndUser(state, ownerId);
+        Pageable pageable = CustomPageable.of(from, size);
         switch (state) {
             case "ALL":
-                return bookingRepository.findAllByOwnerId(ownerId).stream()
+                return bookingRepository.findAllByOwnerId(ownerId, pageable).stream()
                         .map(BookingMapper::toBookingDtoOutput).collect(Collectors.toList());
             case "WAITING":
-                return bookingRepository.findAllByOwnerIdAndStatus(ownerId, Status.WAITING).stream()
+                return bookingRepository.findAllByOwnerIdAndStatus(ownerId, Status.WAITING, pageable).stream()
                         .map(BookingMapper::toBookingDtoOutput).collect(Collectors.toList());
             case "REJECTED":
-                return bookingRepository.findAllByOwnerIdAndStatus(ownerId, Status.REJECTED).stream()
+                return bookingRepository.findAllByOwnerIdAndStatus(ownerId, Status.REJECTED, pageable).stream()
                         .map(BookingMapper::toBookingDtoOutput).collect(Collectors.toList());
             case "PAST":
                 List<BookingDtoOutput> pastList = new ArrayList<>();
-                for (Booking booking : bookingRepository.findAllByOwnerId(ownerId)) {
+                for (Booking booking : bookingRepository.findAllByOwnerId(ownerId, pageable)) {
                     if (booking.getEnd().isBefore(LocalDateTime.now())) {
                         pastList.add(BookingMapper.toBookingDtoOutput(booking));
                     }
@@ -164,7 +173,7 @@ public class BookingService {
                 return pastList;
             case "CURRENT":
                 List<BookingDtoOutput> currentList = new ArrayList<>();
-                for (Booking booking : bookingRepository.findAllByOwnerId(ownerId)) {
+                for (Booking booking : bookingRepository.findAllByOwnerId(ownerId, pageable)) {
                     if (booking.getStart().isBefore(LocalDateTime.now()) &&
                             booking.getEnd().isAfter(LocalDateTime.now())) {
                         currentList.add(BookingMapper.toBookingDtoOutput(booking));
@@ -173,7 +182,7 @@ public class BookingService {
                 return currentList;
             case "FUTURE":
                 List<BookingDtoOutput> futureList = new ArrayList<>();
-                for (Booking booking : bookingRepository.findAllByOwnerId(ownerId)) {
+                for (Booking booking : bookingRepository.findAllByOwnerId(ownerId, pageable)) {
                     if (booking.getEnd().isAfter(LocalDateTime.now())) {
                         futureList.add(BookingMapper.toBookingDtoOutput(booking));
                     }
