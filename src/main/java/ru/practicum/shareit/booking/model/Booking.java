@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 @RequiredArgsConstructor
 @Entity
 @Table(name = "bookings")
@@ -29,5 +30,6 @@ public class Booking {
     @JoinColumn(name = "booker_id")
     private User booker;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Status status;
 }
