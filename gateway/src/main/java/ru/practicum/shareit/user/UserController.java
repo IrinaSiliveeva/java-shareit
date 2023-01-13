@@ -19,7 +19,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Object> createUser(@RequestBody @Validated({Create.class}) UserDto userDto) {
-        log.info("Создан пользователь={}", userDto);
+        log.info("Создан пользователь {}", userDto);
         return userClient.createUser(userDto);
     }
 
@@ -31,20 +31,20 @@ public class UserController {
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getUser(@PathVariable Long id) {
-        log.info("Получение пользователя, userId={}", id);
+        log.info("Получение пользователя, пользователь={}", id);
         return userClient.getUser(id);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable Long id) {
-        log.info("Удаление пользователя, userId={}", id);
+        log.info("Удаление пользователя, пользователь={}", id);
         return userClient.deleteUser(id);
     }
 
     @PatchMapping("{id}")
     public ResponseEntity<Object> updateUser(@PathVariable Long id,
                                              @RequestBody UserDto userDto) {
-        log.info("Обновление пользователя={}, userId={}", userDto, id);
+        log.info("Обновление пользователя {}, пользователь={}", userDto, id);
         return userClient.updateUser(userDto, id);
     }
 }

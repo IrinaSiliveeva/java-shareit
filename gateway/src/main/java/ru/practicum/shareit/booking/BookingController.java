@@ -30,21 +30,21 @@ public class BookingController {
                                                       @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
-        log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
+        log.info("Получение бронирования с состоянием={}, пользователь={}, от={}, размер={}", stateParam, userId, from, size);
         return bookingClient.getAllBookingByUser(userId, state, from, size);
     }
 
     @PostMapping
     public ResponseEntity<Object> createBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                 @RequestBody @Valid BookItemRequestDto requestDto) {
-        log.info("Creating booking {}, userId={}", requestDto, userId);
+        log.info("Создание бронирования {}, пользователь={}", requestDto, userId);
         return bookingClient.createBooking(userId, requestDto);
     }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                              @PathVariable Long bookingId) {
-        log.info("Get booking {}, userId={}", bookingId, userId);
+        log.info("Получение бронирования {}, пользователь={}", bookingId, userId);
         return bookingClient.getBooking(userId, bookingId);
     }
 
@@ -55,7 +55,7 @@ public class BookingController {
                                                        @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
-        log.info("Owner get booking with state {}, userId={}, from={}, size={}", stateParam, ownerId, from, size);
+        log.info("Владелец получает брони с состоянием {}, пользователь={}, от={}, размер={}", stateParam, ownerId, from, size);
         return bookingClient.getAllBookingByOwner(ownerId, state, from, size);
     }
 
@@ -63,7 +63,7 @@ public class BookingController {
     public ResponseEntity<Object> approve(@PathVariable Long bookingId,
                                           @RequestHeader("X-Sharer-User-Id") Long ownerId,
                                           @RequestParam Boolean approved) {
-        log.info("Пользователь изменил статус approved={}, bookingId={}, userId={}", approved, bookingId, ownerId);
+        log.info("Пользователь изменил статус потверждения={}, бронирование={}, пользователь={}", approved, bookingId, ownerId);
         return bookingClient.approve(bookingId, ownerId, approved);
     }
 }

@@ -25,14 +25,14 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<Object> createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                                              @Validated({Create.class}) @RequestBody ItemDto itemDto) {
-        log.info("Пользователь создал предмет={},userId={}", itemDto, userId);
+        log.info("Пользователь создал предмет {},пользователь={}", itemDto, userId);
         return itemClient.createItem(userId, itemDto);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<Object> getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                                           @PathVariable Long id) {
-        log.info("Пользотель получил предмет, userId={}, itemId={}", userId, id);
+        log.info("Пользотель получил предмет, пользователь={}, предмет={}", userId, id);
         return itemClient.getItem(userId, id);
     }
 
@@ -40,7 +40,7 @@ public class ItemController {
     public ResponseEntity<Object> getUserItems(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
-        log.info("Пользователь получил список всех своих предметов, userId={}, from={}, size{}", userId, from, size);
+        log.info("Пользователь получил список всех своих предметов, пользователь={}, от={}, размер{}", userId, from, size);
         return itemClient.getUserItems(userId, from, size);
     }
 
@@ -48,7 +48,7 @@ public class ItemController {
     public ResponseEntity<Object> updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                                              @PathVariable Long id,
                                              @RequestBody ItemDto itemDto) {
-        log.info("Пользователь обновил предмет={}, userId={}, itemId={}", itemDto, userId, id);
+        log.info("Пользователь обновил предмет {}, пользователь={}, предмет={}", itemDto, userId, id);
         return itemClient.updateItem(id, userId, itemDto);
     }
 
@@ -56,7 +56,7 @@ public class ItemController {
     public ResponseEntity<Object> searchItems(@RequestParam(name = "text") String text,
                                               @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                               @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
-        log.info("Поиск предмета, text={}, from={}, size={}", text, from, size);
+        log.info("Поиск предмета, запрос={}, от={}, размер={}", text, from, size);
         return itemClient.searchItems(text, from, size);
     }
 
@@ -64,7 +64,7 @@ public class ItemController {
     public ResponseEntity<Object> createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                 @PathVariable Long id,
                                                 @Valid @RequestBody CommentDto commentDto) {
-        log.info("Пользователь создал коментарий={}, userdId={}, itemId={}", commentDto, userId, id);
+        log.info("Пользователь создал коментарий {}, пользователь={}, предмет={}", commentDto, userId, id);
         return itemClient.createComment(commentDto, id, userId);
     }
 }

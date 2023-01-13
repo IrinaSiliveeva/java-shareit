@@ -24,13 +24,13 @@ public class ItemRequestController {
     @GetMapping("{requestId}")
     public ResponseEntity<Object> getItemRequestById(@PathVariable Long requestId,
                                                      @RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Пользователь получил запрос по id, userId={}, requestId={}", userId, requestId);
+        log.info("Пользователь получил запрос, пользователь={}, запрос={}", userId, requestId);
         return client.getItemRequestById(userId, requestId);
     }
 
     @GetMapping
     public ResponseEntity<Object> getByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        log.info("Владелец получил список запрос, ownerId={}", ownerId);
+        log.info("Владелец получил список запрос, владелец={}", ownerId);
         return client.getByOwner(ownerId);
     }
 
@@ -38,14 +38,14 @@ public class ItemRequestController {
     public ResponseEntity<Object> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
                                          @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                          @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
-        log.info("Пользователь получил список всех запросов, userId={}, from={}, size={}", userId, from, size);
+        log.info("Пользователь получил список всех запросов, пользователь={}, от={}, размер={}", userId, from, size);
         return client.getAll(userId, from, size);
     }
 
     @PostMapping
     public ResponseEntity<Object> createItemRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
                                                     @RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Пользователь создал запрос={}, userId={}", itemRequestDto, userId);
+        log.info("Пользователь создал запрос={}, пользователь={}", itemRequestDto, userId);
         return client.createRequest(itemRequestDto, userId);
     }
 }
